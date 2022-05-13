@@ -19,5 +19,5 @@ interface ConvertApi {
         @Query("from") from: String,
         @Query("to") to: String,
         @Query("amount") amount: String
-    ): Response<Rate>
+    ): Response<Rate>?
 }

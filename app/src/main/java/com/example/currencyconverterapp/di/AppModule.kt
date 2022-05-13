@@ -1,5 +1,6 @@
 package com.example.currencyconverterapp.di
 
+import com.example.currencyconverterapp.api.ConvertApi
 import com.example.currencyconverterapp.api.ConvertApi.Companion.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -20,4 +21,10 @@ object AppModule {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
+    @Provides
+    @Singleton
+    fun provideRateApi(retrofit: Retrofit): ConvertApi = retrofit.create(ConvertApi::class.java)
+
+
 }

@@ -8,7 +8,9 @@ import androidx.versionedparcelable.ParcelField
 import com.example.currencyconverterapp.api.ConvertApi
 import com.example.currencyconverterapp.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okio.IOException
 import retrofit2.HttpException
 import retrofit2.Retrofit
@@ -34,9 +36,8 @@ class MainActivity : AppCompatActivity() {
             val api = retrofit.create(ConvertApi::class.java)
 
             lifecycleScope.launch {
-                    val response = try {
-                        val r = api.getRate(from,to,amount)
-
+                val response = try {
+                        api.getRate(from,to,amount)
                 }catch (e: IOException){
                     Log.d("Main","io $e")
                     return@launch
@@ -44,8 +45,25 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Main","http $e")
                     return@launch
                 }
+
+                if(response.isSuccessful && response.body()!=null){
+                    val b = response.body()!!
+                    Log.d("Main","body: $b ")
+
+                    if(b.success){
+                        val rate = b.result
+                        val rr = String.format("%.2f", rate)
+                        withContext(Dispatchers.Main) {
+                            binding.tvAns.text = "$amount $from = $to $rr "
+                        }
+                    }
+                }else{
+                        Log.d("Main","some error")
+                }
             }
         }
+
+
 
     }
 }

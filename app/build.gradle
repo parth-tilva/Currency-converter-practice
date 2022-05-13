@@ -6,6 +6,12 @@ plugins {
 apply plugin: 'kotlin-kapt'
 
 
+def localPropertiesFile = rootProject.file("local.properties")
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(localPropertiesFile))
+
+
+
 android {
     compileSdk 31
 
@@ -17,6 +23,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "EXCHANGE_API", localProperties['exchangerate_api_key'])
     }
 
     buildTypes {
@@ -56,6 +63,10 @@ dependencies {
     //Lifecycle
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-core:2.4.1")
+
+
+
 
     //Activity KTX for viewModels()
     implementation("androidx.activity:activity-ktx:1.4.0")
@@ -67,6 +78,7 @@ dependencies {
 
     //okhttp
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
+
 
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.13.0'

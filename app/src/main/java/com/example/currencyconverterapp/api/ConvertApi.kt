@@ -16,8 +16,8 @@ interface ConvertApi {
     @Headers("apikey: $CLIENT_ID")
     @GET("convert")
     suspend fun getRate(
-        @Query("to") to: String,
         @Query("from") from: String,
+        @Query("to") to: String,
         @Query("amount") amount: String
     ): Response<Rate>
 }

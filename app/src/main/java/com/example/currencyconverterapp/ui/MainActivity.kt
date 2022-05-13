@@ -1,10 +1,13 @@
 package com.example.currencyconverterapp.ui
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.currencyconverterapp.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Retrofit
@@ -25,55 +28,32 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnConvert.setOnClickListener {
             val amount = binding.etAmount.text.toString()
-            val from = "USD"//binding.spinnerFrom.
-            val to = "INR"
-
-            viewModel.convertCurrency(from,to,amount)
-
-//
-//            val api = retrofit.create(ConvertApi::class.java)
-//
-//            lifecycleScope.launch {
-//                val response = try {
-//                        api.getRate(from,to,amount)
-//                }catch (e: IOException){
-//                    Log.d("Main","io $e")
-//                    return@launch
-//                }catch (e: HttpException){
-//                    Log.d("Main","http $e")
-//                    return@launch
-//                }
-//
-//                if(response.isSuccessful && response.body()!=null){
-//                    val b = response.body()!!
-//                    Log.d("Main","body: $b ")
-//
-//                    if(b.success){
-//                        val rate = b.result
-//                        val rr = String.format("%.2f", rate)
-//                        withContext(Dispatchers.Main) {
-//                            binding.tvAns.text = "$amount $from = $to $rr "
-//                        }
-//                    }
-//                }else{
-//                        Log.d("Main","some error")
-//                }
-//            }
+            val from = binding.spinnerFrom.selectedItem.toString()
+            val to = binding.spinnerTo.selectedItem.toString()
+            viewModel.convert(from,to,amount)
         }
 
-        viewModel.liveRate.observe(this, Observer {
-                                    Log.d("Main","observer claled")
+        lifecycleScope.launchWhenStarted {
+             viewModel.conversion.collect{ event->
+                 when(event){
+                     is  CurrencyViewModel.CurrencyEvent.Success  -> {
+                         binding.progressBar.isVisible = false
+                         binding.tvAns.setTextColor(Color.BLACK)
+                         binding.tvAns.text = event.resultText
 
-            val b = it
-                    Log.d("Main","body: $b ")
-                    if(b.success){
-                        val rate = b.result
-                        val rr = String.format("%.2f", rate)
-                            binding.tvAns.text = "amount from = to $rr "
-                    }
-        })
+                     }
+                     is CurrencyViewModel.CurrencyEvent.Failure -> {
+                         binding.progressBar.isVisible = false
+                         binding.tvAns.setTextColor(Color.RED)
+                         binding.tvAns.text = event.errorText
+                     }
+                     is CurrencyViewModel.CurrencyEvent.Loading -> {
+                        binding.progressBar.isVisible = true
+                     }
+                     else -> Unit
 
-
-
+                 }
+             }
+        }
     }
 }

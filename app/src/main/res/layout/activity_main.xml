@@ -81,7 +81,7 @@
         android:id="@+id/tv_ans"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="40.0 EUR = 50.61 USD"
+        tools:text="40.0 EUR = 50.61 USD"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/black"

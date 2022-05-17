@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                      }
                      is CurrencyViewModel.CurrencyEvent.Loading -> {
                         binding.progressBar.isVisible = true
+                         binding.tvAns.text = ""
                      }
                      else -> Unit
 
